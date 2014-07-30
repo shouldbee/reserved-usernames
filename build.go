@@ -2,56 +2,40 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"github.com/codegangsta/cli"
 	"os"
 	"strings"
-
-	"encoding/json"
-	"github.com/codegangsta/cli"
 )
 
-const WORDS_FILE = "reserved-usernames.txt"
+const MASTER_USERNAME_LIST = "reserved-usernames.txt"
+
+var formatters = map[string]Formatter{
+	"json": &JsonFormatter{},
+	"csv":  &CsvFormatter{},
+	"sql":  &SqlFormatter{},
+	"php":  &PhpFormatter{},
+}
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "reserved_words"
-	app.Usage = "reserved words convert to json, sql, csv"
+	app.Name = "reserved-usernames"
+	app.Usage = "reserved usernames convert to json, sql, csv"
 	app.Flags = []cli.Flag{
-		cli.StringFlag{Name: "format", Value: "json", Usage: "format for the reserved words"},
+		cli.StringFlag{Name: "format", Value: "json", Usage: "format for the reserved usernames"},
 	}
 
 	app.Action = func(c *cli.Context) {
 		format := c.String("format")
 
-		file, err := os.Open(WORDS_FILE)
-
-		if err != nil {
-			panic(err)
-		}
-
-		defer func() {
-			if err := file.Close(); err != nil {
-				panic(err)
-			}
-		}()
+		file, err := os.Open(MASTER_USERNAME_LIST)
+		failOnError(err)
+		defer file.Close()
 
 		lines := scanForInput(file)
-
 		fin := make(chan bool)
-
-		var formatter Formatter
-
-		if format == "json" {
-			formatter = NewJsonFormatter()
-		} else if format == "csv" {
-			formatter = NewCsvFormatter()
-		} else if format == "sql" {
-			formatter = NewSqlFormatter()
-		} else if format == "php" {
-			formatter = &PhpFormatter{}
-		} else {
-			panic("no such formatter")
-		}
+		formatter := formatters[format]
 
 		go func(formatter Formatter, lines chan string, fin chan bool) {
 			fmt.Print(formatter.start())
@@ -70,6 +54,34 @@ func main() {
 	app.Run(os.Args)
 }
 
+func scanForInput(file *os.File) chan string {
+	lines := make(chan string)
+
+	r := bufio.NewReader(file)
+	scanner := bufio.NewScanner(r)
+	scanner.Split(bufio.ScanLines)
+
+	go func() {
+		for scanner.Scan() {
+			lines <- scanner.Text()
+		}
+
+		close(lines)
+	}()
+
+	return lines
+}
+
+func failOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+//
+// fomatters
+//
+
 type Formatter interface {
 	start() string
 	end() string
@@ -77,9 +89,9 @@ type Formatter interface {
 	join(lines []string) string
 }
 
-func NewJsonFormatter() *JsonFormatter {
-	return &JsonFormatter{}
-}
+//
+// json
+//
 
 type JsonFormatter struct {
 }
@@ -87,12 +99,15 @@ type JsonFormatter struct {
 func (this *JsonFormatter) start() string {
 	return ""
 }
+
 func (this *JsonFormatter) end() string {
 	return "\n"
 }
+
 func (this *JsonFormatter) format(line string) string {
 	return line
 }
+
 func (this *JsonFormatter) join(lines []string) string {
 	b, err := json.MarshalIndent(lines, "", "  ")
 	if err != nil {
@@ -100,9 +115,10 @@ func (this *JsonFormatter) join(lines []string) string {
 	}
 	return string(b)
 }
-func NewCsvFormatter() *CsvFormatter {
-	return &CsvFormatter{}
-}
+
+//
+// csv
+//
 
 type CsvFormatter struct {
 }
@@ -110,18 +126,22 @@ type CsvFormatter struct {
 func (this *CsvFormatter) start() string {
 	return ""
 }
+
 func (this *CsvFormatter) end() string {
 	return "\n"
 }
+
 func (this *CsvFormatter) format(line string) string {
 	return line
 }
+
 func (this *CsvFormatter) join(lines []string) string {
 	return strings.Join(lines, "\n")
 }
-func NewSqlFormatter() *SqlFormatter {
-	return &SqlFormatter{}
-}
+
+//
+// sql
+//
 
 type SqlFormatter struct {
 }
@@ -134,15 +154,22 @@ func (this *SqlFormatter) start() string {
 INSERT INTO reserved_usernames VALUES
 `
 }
+
 func (this *SqlFormatter) end() string {
 	return ";\n"
 }
+
 func (this *SqlFormatter) format(line string) string {
 	return fmt.Sprintf("('%s')", line)
 }
+
 func (this *SqlFormatter) join(lines []string) string {
 	return strings.Join(lines, ",\n")
 }
+
+//
+// php
+//
 
 type PhpFormatter struct {
 }
@@ -174,22 +201,4 @@ func (this *PhpFormatter) format(line string) string {
 
 func (this *PhpFormatter) join(lines []string) string {
 	return strings.Join(lines, ",\n")
-}
-
-func scanForInput(file *os.File) chan string {
-	lines := make(chan string)
-
-	r := bufio.NewReader(file)
-	scanner := bufio.NewScanner(r)
-	scanner.Split(bufio.ScanLines)
-
-	go func() {
-		for scanner.Scan() {
-			lines <- scanner.Text()
-		}
-
-		close(lines)
-	}()
-
-	return lines
 }

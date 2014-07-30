@@ -1,31 +1,33 @@
 package main
 
 import (
-	"os"
 	"bufio"
 	"fmt"
+	"os"
 	"strings"
 
-	"github.com/codegangsta/cli"
 	"encoding/json"
+	"github.com/codegangsta/cli"
 )
 
 const WORDS_FILE = "reserved-usernames.txt"
 
 func main() {
 	app := cli.NewApp()
-  app.Name = "reserved_words"
+	app.Name = "reserved_words"
 	app.Usage = "reserved words convert to json, sql, csv"
-	app.Flags = []cli.Flag {
+	app.Flags = []cli.Flag{
 		cli.StringFlag{Name: "format", Value: "json", Usage: "format for the reserved words"},
 	}
 
-  app.Action = func(c *cli.Context) {
+	app.Action = func(c *cli.Context) {
 		format := c.String("format")
 
 		file, err := os.Open(WORDS_FILE)
 
-		if err != nil { panic(err) }
+		if err != nil {
+			panic(err)
+		}
 
 		defer func() {
 			if err := file.Close(); err != nil {
@@ -57,13 +59,13 @@ func main() {
 			}
 			fmt.Print(formatter.join(buf))
 			fmt.Print(formatter.end())
-			fin<-true
+			fin <- true
 		}(formatter, lines, fin)
 
 		<-fin
-  }
+	}
 
-  app.Run(os.Args)
+	app.Run(os.Args)
 }
 
 type Formatter interface {
@@ -76,8 +78,10 @@ type Formatter interface {
 func NewJsonFormatter() *JsonFormatter {
 	return &JsonFormatter{}
 }
+
 type JsonFormatter struct {
 }
+
 func (this *JsonFormatter) start() string {
 	return ""
 }
@@ -89,14 +93,18 @@ func (this *JsonFormatter) format(line string) string {
 }
 func (this *JsonFormatter) join(lines []string) string {
 	b, err := json.MarshalIndent(lines, "", "  ")
-	if err != nil { fmt.Println("error:", err) }
+	if err != nil {
+		fmt.Println("error:", err)
+	}
 	return string(b)
 }
 func NewCsvFormatter() *CsvFormatter {
 	return &CsvFormatter{}
 }
+
 type CsvFormatter struct {
 }
+
 func (this *CsvFormatter) start() string {
 	return ""
 }
@@ -112,8 +120,10 @@ func (this *CsvFormatter) join(lines []string) string {
 func NewSqlFormatter() *SqlFormatter {
 	return &SqlFormatter{}
 }
+
 type SqlFormatter struct {
 }
+
 func (this *SqlFormatter) start() string {
 	return "INSERT INTO ${reserved_words_table} (${reserved_words_column}) VALUES \n"
 }

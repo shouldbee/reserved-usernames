@@ -47,6 +47,8 @@ func main() {
 			formatter = NewCsvFormatter()
 		} else if format == "sql" {
 			formatter = NewSqlFormatter()
+		} else if format == "php" {
+			formatter = &PhpFormatter{}
 		} else {
 			panic("no such formatter")
 		}
@@ -129,7 +131,7 @@ func (this *SqlFormatter) start() string {
   username varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO reserved_usernames VALUES 
+INSERT INTO reserved_usernames VALUES
 `
 }
 func (this *SqlFormatter) end() string {
@@ -139,6 +141,38 @@ func (this *SqlFormatter) format(line string) string {
 	return fmt.Sprintf("('%s')", line)
 }
 func (this *SqlFormatter) join(lines []string) string {
+	return strings.Join(lines, ",\n")
+}
+
+type PhpFormatter struct {
+}
+
+func (this *PhpFormatter) start() string {
+	return `<?php
+
+/*
+How to use:
+
+$reservedUsernames = require "reserved-usernames.php";
+
+if (in_array($username, $reservedUsernames)) {
+   // This username is reserved.
+}
+*/
+
+return [
+`
+}
+
+func (this *PhpFormatter) end() string {
+	return "\n];\n"
+}
+
+func (this *PhpFormatter) format(line string) string {
+	return fmt.Sprintf("    '%s'", line)
+}
+
+func (this *PhpFormatter) join(lines []string) string {
 	return strings.Join(lines, ",\n")
 }
 

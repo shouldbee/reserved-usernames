@@ -2,7 +2,7 @@ CREATE TABLE reserved_usernames (
   username varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO reserved_usernames VALUES 
+INSERT INTO reserved_usernames VALUES
 ('0'),
 ('about'),
 ('access'),

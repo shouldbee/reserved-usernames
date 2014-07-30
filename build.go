@@ -125,7 +125,12 @@ type SqlFormatter struct {
 }
 
 func (this *SqlFormatter) start() string {
-	return "INSERT INTO ${reserved_words_table} (${reserved_words_column}) VALUES \n"
+	return `CREATE TABLE reserved_usernames (
+  username varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO reserved_usernames VALUES 
+`
 }
 func (this *SqlFormatter) end() string {
 	return ";\n"

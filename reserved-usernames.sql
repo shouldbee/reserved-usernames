@@ -1,4 +1,8 @@
-INSERT INTO ${reserved_words_table} (${reserved_words_column}) VALUES 
+CREATE TABLE reserved_usernames (
+  username varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO reserved_usernames VALUES 
 ('about'),
 ('access'),
 ('admin'),

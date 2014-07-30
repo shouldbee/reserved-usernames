@@ -32,3 +32,14 @@ Plain text:
 wget https://github.com/shouldbee/reserved-usernames/raw/master/reserved-usernames.txt
 ```
 
+## Contribution
+
+### How to add new usernames
+
+You need `go` to compile multiple formats.
+
+1. Edit reserved-usernames.txt.
+2. Run `make build`.
+3. Commit it.
+4. Then pull request it!
+

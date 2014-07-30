@@ -9,10 +9,10 @@ blog
 career
 categories
 category
-clients
-client
 check
 checking
+client
+clients
 communities
 community
 company
@@ -86,12 +86,12 @@ staff
 status
 support
 team
-test
-testing
 terms
 terms-of-service
 terms_of_service
 termsofservice
+test
+testing
 top
 tutorial
 usage

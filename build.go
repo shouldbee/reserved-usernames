@@ -10,7 +10,7 @@ import (
 	"encoding/json"
 )
 
-const WORDS_FILE = "reserved_words.txt"
+const WORDS_FILE = "reserved-usernames.txt"
 
 func main() {
 	app := cli.NewApp()

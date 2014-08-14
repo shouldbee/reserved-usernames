@@ -367,6 +367,7 @@ return [
     'php',
     'pic',
     'pics',
+    'ping',
     'plan',
     'plans',
     'plugin',

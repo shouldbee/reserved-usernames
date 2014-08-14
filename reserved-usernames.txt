@@ -347,7 +347,6 @@ panel
 password
 payment
 perl
-ping
 phone
 photo
 photoalbum
@@ -355,6 +354,7 @@ photos
 php
 pic
 pics
+ping
 plan
 plans
 plugin

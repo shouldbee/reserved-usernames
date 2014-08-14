@@ -359,6 +359,7 @@ INSERT INTO reserved_usernames VALUES
 ('php'),
 ('pic'),
 ('pics'),
+('ping'),
 ('plan'),
 ('plans'),
 ('plugin'),

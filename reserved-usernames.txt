@@ -347,6 +347,7 @@ panel
 password
 payment
 perl
+ping
 phone
 photo
 photoalbum

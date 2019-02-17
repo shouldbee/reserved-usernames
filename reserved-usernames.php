@@ -190,6 +190,7 @@ return [
     'game',
     'games',
     'get',
+    'ghost',
     'gift',
     'gifts',
     'gist',

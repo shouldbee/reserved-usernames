@@ -182,6 +182,7 @@ INSERT INTO reserved_usernames VALUES
 ('game'),
 ('games'),
 ('get'),
+('ghost'),
 ('gift'),
 ('gifts'),
 ('gist'),

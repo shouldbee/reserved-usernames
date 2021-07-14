@@ -142,6 +142,7 @@ error
 errors
 eval
 event
+everyone
 exit
 explore
 facebook

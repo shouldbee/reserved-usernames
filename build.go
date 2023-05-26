@@ -4,9 +4,10 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/codegangsta/cli"
 	"os"
 	"strings"
+
+	"github.com/urfave/cli"
 )
 
 const MASTER_USERNAME_LIST = "reserved-usernames.txt"
